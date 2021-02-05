@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+    <source name="jd">
+        <website>https://list.jd.com/list.html?cat=1713,3258,6569</website>
+        <agent>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36</agent>
+        <cookie>__jdu=15920173609831921346241; shshshfpb=1a8bf55b035db41839fd2066a728258a90856c35d75ca7db15b18f93b3; shshshfpa=de205b17-cbb5-712b-f06d-44c2ef7c4266-1532931472; __jdv=76161171|www.google.com|-|referral|-|1612251908935; areaId=22; ipLoc-djd=22-1930-49324-0; rkv=1.0; _pst=jd_4b3e55c0dbfed; unick=jd_4b3e55c0dbfed; pin=jd_4b3e55c0dbfed; _tp=4ZiwGHoqkhjGXZaiEpomZY2vy2o%2FZinH%2FPRjKimBXXw%3D; pinId=rVBM11ZsjZG566KQICQgprV9-x-f3wj7; qrsc=3; __jdc=122270672; __jda=122270672.15920173609831921346241.1592017361.1612345837.1612425451.32; __jdb=122270672.2.15920173609831921346241|32.1612425451; shshshfp=0d0df2f294230cee881350efa8390737; shshshsID=0e54f3388597e9dbbea2d68ec0a71bd6_2_1612425456677; 3AB9D23F7A4B3C9B=IXIH7HGD5VVZPU7NSYLOZBTPXOSAJ7QXDAYZODI7WUI6SPU7NHN2GB5OCDUUH7X44V6WMAB5OJ6IAPOIR5DN73BDAU</cookie>
+    </source>
+
+    <source name="taobao">
+        <website>https://s.taobao.com/search?q=%E4%B8%89%E4%BD%93&amp;imgfile=&amp;js=1&amp;stats_click=search_radio_all%3A1&amp;initiative_id=staobaoz_20210204&amp;ie=utf8</website>
+        <agent>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36</agent>
+        <cookie>cookie2=169e3111851231ba77e8b99104bf3156; t=2e0b7bd0ed154ad6d93c30255a32ec9f; _samesite_flag_=true; thw=cn; hng=CN%7Czh-CN%7CCNY%7C156; enc=V%2BOUnzdUvTpBO9HJWNUHJy3GcmHJqT3WKm4xLq0WF3YWqCi0QoO1iEgtIXJFF9TzxLTv4WuPkUdFI4tjN7p1rg%3D%3D; _fbp=fb.1.1606735555384.1298677512; _tb_token_=7e777e86bfe9a; alitrackid=www.taobao.com; lastalitrackid=www.taobao.com; mt=ci=0_0; tracknick=; cna=q1t4EhB3cGsCAdxzt4kzaP04; _uab_collina=161242528221903404944236; _m_h5_tk=692ac5e1769321da808bde28a900ed61_1612503935517; _m_h5_tk_enc=eed5e5c8cc326f1af992b8ed1d4bfec6; xlly_s=1; uc1=cookie14=Uoe1gB%2B3R2edzA%3D%3D; x5sec=7b227365617263686170703b32223a223662376239666664613033303531646333653730313465623636326338343161434c6e72386f4147454b476b2b50754a6e7275557a77456144444d304d6a4d314e5451784d6a63374d54436e68594b652f502f2f2f2f3842227d; JSESSIONID=97E5F205BC2375F5B20EBE8BECED38DE; tfstk=cL3CBuYcF9XQhjtP8XON8z-6NTU5Zav_sHwKODRJY8sFJ-GCi0b4hyAqqObTD51..; l=eBEUJzIejNHzJa8BBOfZnurza77TIIRAguPzaNbMiOCPOS1p5LUVW6MdblT9CnGVh6u9R3uKcXmBBeYBqIv4n5U62j-la6Hmn; isg=BICAfnU_9F8AOYhelrMaSWfwUQ5SCWTTR_BU3foRRhsudSCfoh2AY89Hid21RRyr</cookie>
+    </source>
+
+    <source name="tmall">
+        <website>https://list.tmall.com/search_product.htm?q=%C8%FD%CC%E5&amp;type=p&amp;vmarket=&amp;spm=875.7931836%2FB.a2227oh.d100&amp;from=mallfp..pc_1_searchbutton</website>
+        <agent></agent>
+        <cookie></cookie>
+    </source>
+</configuration>
