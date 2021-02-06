@@ -1,5 +1,6 @@
 package util;
 
+import model.Page;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
@@ -11,13 +12,13 @@ import java.io.IOException;
 
 public class HTTPUtils
 {
-    public static HttpResponse getRawHtml(HttpClient client, String personalUrl)
+    public static HttpResponse getRawHtml(HttpClient client, Page page)
     {
-        HttpGet getMethod = new HttpGet(personalUrl);
+        HttpGet getMethod = new HttpGet(page.getUrl());
 
         // 登陆情况
-        getMethod.setHeader("User-Agent", ConfigUtils.getElement("agent"));
-        getMethod.addHeader("Cookie", ConfigUtils.getElement("cookie"));
+        getMethod.setHeader("User-Agent", page.getAgent());
+        getMethod.addHeader("Cookie", page.getCookie());
 
         HttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_1,
                 HttpStatus.SC_OK, "OK");

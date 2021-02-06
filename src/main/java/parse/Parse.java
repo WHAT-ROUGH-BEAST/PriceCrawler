@@ -9,12 +9,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Parse
 {
-    public static List<BookModel> getData(String sc, String html) throws Exception
+    public static List<BookModel> getData(String sc, String html)
     {
         Document doc = Jsoup.parse(html);
 

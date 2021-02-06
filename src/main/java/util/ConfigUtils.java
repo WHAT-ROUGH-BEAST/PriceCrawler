@@ -13,7 +13,7 @@ public class ConfigUtils
 {
     private static Map<String, Map<String, String>> attrs;
 
-    private static String currentSource = "jd";
+    private static String driverAdd;
 
     // 初始化attrs
     static
@@ -30,6 +30,8 @@ public class ConfigUtils
             DocumentBuilder builder = dFactory.newDocumentBuilder();
             InputStream is = ConfigUtils.class.getClassLoader().getResourceAsStream("config.xml");
             Document doc = builder.parse(is);
+
+            driverAdd = doc.getElementsByTagName("driveradd").item(0).getTextContent();
 
             NodeList nl = doc.getElementsByTagName("source");
 
@@ -57,38 +59,13 @@ public class ConfigUtils
         }
     }
 
-    public static String getElement(String type)
+    public static String getElement(String source, String type)
     {
-        return attrs.get(currentSource).get(type);
+        return attrs.get(source).get(type);
     }
 
-    public static void setCurrentSource(String currentSc)
+    public static String getDriverAdd()
     {
-        ConfigUtils.currentSource = currentSc;
+        return driverAdd;
     }
-
-    public static String getCurrentSource()
-    {
-        return currentSource;
-    }
-
-    //    private static void readCurrentSource()
-//    {
-//        DocumentBuilderFactory dFactory = DocumentBuilderFactory.newInstance();
-//
-//        try
-//        {
-//            DocumentBuilder builder = dFactory.newDocumentBuilder();
-//            InputStream is = ConfigUtils.class.getClassLoader().getResourceAsStream("config.xml");
-//            Document doc = builder.parse(is);
-//
-//            NodeList nl = doc.getElementsByTagName("currentsource");
-//
-//            currentSource = nl.item(0).getTextContent();
-//        }
-//        catch (Exception e)
-//        {
-//            e.printStackTrace();
-//        }
-//    }
 }
