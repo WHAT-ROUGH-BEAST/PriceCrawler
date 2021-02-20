@@ -34,11 +34,11 @@ public class Page
     public void setPage(int page)
     {
         this.page = page;
-        if (siteName.equals("jd"))
-        {
-            url = url.replaceFirst("#PAGE#", String.valueOf(page));
-            url = url.replaceFirst("page=(\\d*)", "page=" + String.valueOf(page));
-        }
+//        if (siteName.equals("jd"))
+//        {
+//            url = url.replaceFirst("#PAGE#", String.valueOf(page));
+//            url = url.replaceFirst("page=(\\d*)", "page=" + String.valueOf(page));
+//        }
     }
 
     public String getSiteName()

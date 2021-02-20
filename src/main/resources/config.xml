@@ -13,7 +13,7 @@
     </source>
 
     <source name="tmall">
-        <website>https://list.tmall.com/search_product.htm?q=%C8%FD%CC%E5&amp;type=p&amp;vmarket=&amp;spm=875.7931836%2FB.a2227oh.d100&amp;from=mallfp..pc_1_searchbutton</website>
+        <website>https://list.tmall.com/search_product.htm?q=#SEARCHITEM#&amp;type=p&amp;vmarket=&amp;spm=875.7931836%2FB.a2227oh.d100&amp;from=mallfp..pc_1_searchbutton</website>
         <agent></agent>
         <cookie></cookie>
     </source>

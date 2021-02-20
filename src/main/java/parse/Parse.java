@@ -37,6 +37,8 @@ public class Parse
             String bookID = elem.attr("data-sku");
             String bookPrice = elem.select("div[class=p-price]").select("strong").select("i").text();
             String bookName = elem.select("div[class=p-name]").select("em").text();
+            if (bookName.isEmpty())
+                bookName = elem.select("div[class=p-name p-name-type-2]").select("em").text();
 
             BookModel bookModel = new BookModel();
 
@@ -82,9 +84,13 @@ public class Parse
     {
         List<BookModel> data = new ArrayList<>();
 
+        // 得到相关的js内容
+        String jsonStr = "";
         Elements scripts = doc.select("script");
-
-        String jsonStr = scripts.get(7).childNode(0).toString();
+//        jsonStr = scripts.get(39).childNode(0).toString();
+        for (Element s : scripts)
+            if (s.childNodeSize() > 0 && s.childNode(0).toString().contains("g_page_config"))
+                jsonStr = s.childNode(0).toString();
 
         jsonStr = jsonStr.split("=")[1].
             split("g_srp_loadCss();")[0];

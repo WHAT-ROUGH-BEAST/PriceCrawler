@@ -12,12 +12,12 @@ import java.util.*;
 
 public class CrawlerMain
 {
-    static Logger logger = Logger.getLogger(CrawlerMain.class);
+    public static Logger logger = Logger.getLogger(CrawlerMain.class);
 
     public static void main(String[] args)
     {
-        Page jd = new Page("tmall", "三体");
-        craw(jd);
+//        craw(new Page("jd", "eric clapton"));
+        craw(new Page("tmall", "prs韩产电吉他"));
     }
 
     private static void craw(Page page)
