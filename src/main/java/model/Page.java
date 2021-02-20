@@ -10,6 +10,17 @@ public class Page
     private String cookie;
     private String agent;
     private int page = 1;
+    private int maxPage = 0;
+
+    public int getMaxPage()
+    {
+        return maxPage;
+    }
+
+    public void setMaxPage(int maxPage)
+    {
+        this.maxPage = maxPage;
+    }
 
     public Page(String siteName, String searchItem)
     {

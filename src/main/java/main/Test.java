@@ -11,16 +11,14 @@ import org.openqa.selenium.interactions.Actions;
 import parse.Parse;
 import util.ConfigUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 public class Test
 {
-    private static WebDriver driver;
+    private static ChromeDriver driver;
 
     static
     {
@@ -42,6 +40,16 @@ public class Test
         driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.manage().window().maximize();
+
+        // 防止被淘宝检测 + ChromeDriver内部改字符串
+        driver.executeCdpCommand("Page.addScriptToEvaluateOnNewDocument", new HashMap<>(){
+            {
+                put("source", "Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});" +
+                        "window.navigator.chrome = { runtime: {},  };" +
+                        "Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });" +
+                        "Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5,6], });");
+            }
+        });
     }
 
     public static void main(String[] args)
@@ -52,12 +60,13 @@ public class Test
         // 初始登录
         login();
 
-        // TODO webdriver undefined
-//        ((JavascriptExecutor) driver).executeScript("Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});");
         sleep(1500);
+        driver.get(page.getUrl());
+
+        // 得到最大页数
+        ReadMaxPage(page);
 
         // 爬需要的界面
-        driver.get(page.getUrl());
         while (pageCraw(data, page)){}
 
         // 输出结果
@@ -71,11 +80,30 @@ public class Test
         driver.close();
     }
 
+    private static void ReadMaxPage(Page page)
+    {
+        int maxPage = 0;
+        String siteName = page.getSiteName();
+        if (siteName.equals("tmall"))
+        {
+            maxPage = Integer.parseInt(driver.findElement(By.cssSelector("input[name='totalPage']")).getAttribute("value"));
+        }
+        else if (siteName.equals("taobao"))
+        {
+            maxPage = Integer.parseInt(driver.findElement(By.cssSelector("input[aria-label='页码输入框']")).getAttribute("max"));
+        }
+        else if (siteName.equals("jd"))
+        {
+            maxPage = Integer.parseInt(driver.findElement(By.cssSelector("span[class='p-skip']")).findElement(By.tagName("b")).getText());
+        }
+
+        page.setMaxPage(maxPage);
+    }
+
     private static void login()
     {
         driver.get("https://login.taobao.com/member/login.jhtml?tpl_redirect_url=https%3A%2F%2Fwww.tmall.com%2F&style=miniall&enup=true&newMini2=true&full_redirect=true&sub=true&from=tmall&allp=assets_css%3D3.0.10/login_pc.css&pms=1613635752037");
         sleep(1000);
-        ((JavascriptExecutor) driver).executeScript("Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});");
 
         WebElement usr = driver.findElement(By.id("fm-login-id"));
         WebElement pw = driver.findElement(By.id("fm-login-password"));
@@ -86,9 +114,6 @@ public class Test
 
     private static boolean pageCraw(final List<BookModel> data, Page page)
     {
-        // TODO webdriver undefined
-//        ((JavascriptExecutor) driver).executeScript("Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});");
-
         List<BookModel> pageData = new ArrayList<>();
         if (page.getSiteName().equals("jd")) {}
 //            pageData = scrollPage(page);
@@ -102,67 +127,43 @@ public class Test
         // 翻页
         nextPage(page);
 
-//        return !(pageData.size() < 60);
-        return !(pageData.size() < 48);
+        return page.getPage() < page.getMaxPage();
     }
 
     private static void nextPage(Page page)
     {
-        String siteName = page.getSiteName();
+        page.setPage(page.getPage() + 1);
 
+        String siteName = page.getSiteName();
         if (siteName.equals("jd")) {}
         else if (siteName.equals("tmall"))
         {
-            page.setPage(page.getPage() + 1);
             driver.findElement(By.cssSelector("a[class='ui-page-next']")).click();
 
             page.setUrl(driver.getCurrentUrl());
-            ((JavascriptExecutor) driver).executeScript("Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});");
-            ((JavascriptExecutor) driver).executeScript("window.navigator.chrome = { runtime: {},  };");
-            ((JavascriptExecutor) driver).executeScript("Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });");
-            ((JavascriptExecutor) driver).executeScript("Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5,6], });");
 
-            // 防止滑块
-            try
-            {
-                WebElement slider = driver.findElement(By.cssSelector("span[id='nc_1_n1z']"));
-//                slide();
-                sleep(10000);
-            }
-            catch (Exception e)
-            {
-                System.err.println(e.getMessage() + " no slider");
-            }
+            // 防止滑块 TODO
+            if (driver.getTitle().equals("验证码拦截"))
+                slide();
         }
         else if (siteName.equals("taobao"))
         {
-            page.setPage(page.getPage() + 1);
             String src = driver.getPageSource();
             driver.findElement(By.cssSelector("a[trace='srp_bottom_pagedown']")).click();
             page.setUrl(driver.getCurrentUrl());
 
-            // 防止滑块
-            try
-            {
+            // 防止滑块 TODO
+            if (driver.getTitle().equals("验证码拦截"))
                 slide();
-//                sleep(10000);
-            }
-            catch (Exception e)
-            {
-                System.err.println(e.getMessage() + " no slider");
-            }
         }
     }
 
     private static void slide()
     {
-        // TODO ADD KEEP THIS ONE
-       WebElement slider = driver.findElement(By.cssSelector("span[id='nc_1_n1z']"));
-
+        WebElement slider = driver.findElement(By.cssSelector("span[id='nc_1_n1z']"));
         Actions move = new Actions(driver);
         move.clickAndHold(slider).perform();
-        for (int i = 0; i < 100; i ++)
-            move.moveByOffset(i, 0);
+        move.moveByOffset(500, 0);
         move.pause(1).release().perform();
     }
 

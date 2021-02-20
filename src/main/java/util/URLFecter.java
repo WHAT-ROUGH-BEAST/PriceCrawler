@@ -36,24 +36,24 @@ public class URLFecter
         //setting the driver executable
         System.setProperty("webdriver.chrome.driver", ConfigUtils.getDriverAdd());
         ChromeOptions options = new ChromeOptions();
-        //设置代理IP
-//        String proxyHttpUrl = "127.2.2.2:8080";
-//        options.addArguments("--proxy-server=http://" + proxyHttpUrl);
         // 不加载图片
-//        options.addArguments("blink-settings=imagesEnabled=false");
+        options.addArguments("blink-settings=imagesEnabled=false");
         //关闭自动测试状态显示
         options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
 
         driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.manage().window().maximize();
-        // 设置driver undefined
-//        Map<String, Object> param = new HashMap<>();
-//
-//        ((RemoteWebDriver) driver).getExecuteMethod().execute("executeCdpCommand",
-//                ImmutableMap.of(
-//                        "cmd", "Page.addScriptToEvaluateOnNewDocument",
-//                        "params", param));
+
+        // 防止被淘宝检测 + ChromeDriver内部改字符串
+        driver.executeCdpCommand("Page.addScriptToEvaluateOnNewDocument", new HashMap<>(){
+            {
+                put("source", "Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});" +
+                        "window.navigator.chrome = { runtime: {},  };" +
+                        "Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });" +
+                        "Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5,6], });");
+            }
+        });
     }
 
     public static List<BookModel> URLParser(Page page) throws Exception
@@ -168,7 +168,6 @@ public class URLFecter
         }
 
         return !(pageData.size() < 60);
-
     }
 
     private static void nextPage(Page page) throws Exception
@@ -176,9 +175,7 @@ public class URLFecter
         String siteName = page.getSiteName();
         if (siteName.equals("jd"))
         {
-            WebElement nextButton = driver.
-                    findElement(By.className("fp-next"));
-            nextButton.click();
+            driver.findElement(By.className("fp-next")).click();
             page.setUrl(driver.getCurrentUrl());
         }
         else if (siteName.equals("tmall"))
