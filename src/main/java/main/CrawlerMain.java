@@ -16,8 +16,7 @@ public class CrawlerMain
 
     public static void main(String[] args)
     {
-//        craw(new Page("jd", "eric clapton"));
-        craw(new Page("tmall", "prs韩产电吉他"));
+        craw(new Page("taobao", "louie"));
     }
 
     private static void craw(Page page)
@@ -39,5 +38,6 @@ public class CrawlerMain
                     "\t\t"+"bookName:"+da.getBookName());
 
         // db
+        System.exit(1);
     }
 }

@@ -19,4 +19,9 @@
     </source>
 
     <driveradd>D:\IntelliJ IDEA\chromedriver_win32\chromedriver.exe</driveradd>
+
+    <login>https://login.taobao.com/member/login.jhtml?tpl_redirect_url=https%3A%2F%2Fwww.tmall.com%2F&amp;style=miniall&amp;enup=true&amp;newMini2=true&amp;full_redirect=true&amp;sub=true&amp;from=tmall&amp;allp=assets_css%3D3.0.10/login_pc.css&amp;pms=1613635752037</login>
+    <user>1806991194@qq.com</user>
+    <pw>transformers!13</pw>
+
 </configuration>

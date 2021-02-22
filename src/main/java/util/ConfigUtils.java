@@ -12,8 +12,7 @@ import java.util.*;
 public class ConfigUtils
 {
     private static Map<String, Map<String, String>> attrs;
-
-    private static String driverAdd;
+    private static String driverAdd, user, pw, loginUrl;
 
     // 初始化attrs
     static
@@ -32,6 +31,9 @@ public class ConfigUtils
             Document doc = builder.parse(is);
 
             driverAdd = doc.getElementsByTagName("driveradd").item(0).getTextContent();
+            loginUrl = doc.getElementsByTagName("login").item(0).getTextContent();
+            user = doc.getElementsByTagName("user").item(0).getTextContent();
+            pw = doc.getElementsByTagName("pw").item(0).getTextContent();
 
             NodeList nl = doc.getElementsByTagName("source");
 
@@ -67,5 +69,20 @@ public class ConfigUtils
     public static String getDriverAdd()
     {
         return driverAdd;
+    }
+
+    public static String getLoginUrl()
+    {
+        return loginUrl;
+    }
+
+    public static String getUser()
+    {
+        return user;
+    }
+
+    public static String getPw()
+    {
+        return pw;
     }
 }
