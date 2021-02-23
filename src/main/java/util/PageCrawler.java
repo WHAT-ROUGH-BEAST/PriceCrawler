@@ -111,10 +111,10 @@ public class PageCrawler
                     slide();
             }
             case "taobao" -> {
+                int nextpage = Integer.parseInt(driver.findElement(By.cssSelector("input[class='input J_Input']")).getAttribute("value"));
                 driver.findElement(By.cssSelector("a[trace='srp_bottom_pagedown']")).click();
 
                 // 识别中途出现的滑块
-                int nextpage = Integer.parseInt(driver.findElement(By.cssSelector("input[class='input J_Input']")).getAttribute("value"));
                 if (nextpage != page.getPage())
                     slide();
 
@@ -139,6 +139,8 @@ public class PageCrawler
             CrawlerMain.logger.info("请滑动滑块");
             URLFecter.sleep(10);
         }
+
+        URLFecter.sleep(5);
     }
 
     private List<ProductModel> scrollPage(Page page)
