@@ -111,11 +111,11 @@ public class PageCrawler
                     slide();
             }
             case "taobao" -> {
+                int nextpage = Integer.parseInt(driver.findElement(By.cssSelector("input[class='input J_Input']")).getAttribute("value"));
                 driver.findElement(By.cssSelector("a[trace='srp_bottom_pagedown']")).click();
 
                 // 识别中途出现的滑块
-                int nextpage = Integer.parseInt(driver.findElement(By.cssSelector("input[class='input J_Input']")).getAttribute("value"));
-                if (nextpage != page.getPage())
+                if (nextpage + 1 != page.getPage())
                     slide();
 
                 page.setUrl(driver.getCurrentUrl());
