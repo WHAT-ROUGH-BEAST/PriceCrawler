@@ -1,43 +1,44 @@
 package main;
 
-import model.BookModel;
+import model.ProductModel;
 import model.Page;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
+import org.openqa.selenium.chrome.ChromeDriver;
 import util.ConfigUtils;
 import util.URLFecter;
 
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class CrawlerMain
 {
     public static Logger logger = Logger.getLogger(CrawlerMain.class);
+    public static List<String> sites = new ArrayList<>(Arrays.asList(
+            "taobao", "jd", "tmall"));
+    public static String searchItem = "louie";
 
     public static void main(String[] args)
     {
-        craw(new Page("taobao", "louie"));
-    }
-
-    private static void craw(Page page)
-    {
-        List<BookModel> data = null;
+        HashMap<String, ProductModel> mins = new HashMap<>();
         try
         {
-            data = URLFecter.URLParser(page);
+            for (String site : sites)
+            {
+                Set<ProductModel> data = new URLFecter(new Page(site, searchItem)).URLParser();
+                mins.put(site, Collections.min(data));
+            }
+
+            mins.forEach((s, v)->{
+                logger.info(s + " : " + v.getBookPrice() + " " + v.getBookName());
+            });
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
 
-        logger.info("read from: " + page.getSiteName() + "\n" + "count " + data.size());
-
-        for (BookModel da : data)
-            CrawlerMain.logger.info("bookID:"+da.getBookId()+"\t\t"+"bookPrice:"+da.getBookPrice()+
-                    "\t\t"+"bookName:"+da.getBookName());
-
-        // db
         System.exit(1);
     }
 }

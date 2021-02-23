@@ -1,6 +1,6 @@
 package parse;
 
-import model.BookModel;
+import model.ProductModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -13,23 +13,26 @@ import java.util.List;
 
 public class Parse
 {
-    public static List<BookModel> getData(String sc, String html)
+    public static List<ProductModel> getData(String sc, String html)
     {
         Document doc = Jsoup.parse(html);
 
-        if (sc.equals("jd"))
-            return Jdparse(doc);
-        else if (sc.equals("tmall"))
-            return Tmallparse(doc);
-        else if (sc.equals("taobao"))
-            return Taobaoparse(doc);
+        switch (sc)
+        {
+            case "jd":
+                return Jdparse(doc);
+            case "tmall":
+                return Tmallparse(doc);
+            case "taobao":
+                return Taobaoparse(doc);
+        }
 
         throw new RuntimeException("no such source");
     }
 
-    private static List<BookModel> Jdparse(Document doc)
+    private static List<ProductModel> Jdparse(Document doc)
     {
-        List<BookModel> data = new ArrayList<>();
+        List<ProductModel> data = new ArrayList<>();
 
         Elements elements = doc.select("ul[class=gl-warp clearfix]").select("li[class=gl-item]");
         for (Element elem : elements)
@@ -40,21 +43,21 @@ public class Parse
             if (bookName.isEmpty())
                 bookName = elem.select("div[class=p-name p-name-type-2]").select("em").text();
 
-            BookModel bookModel = new BookModel();
+            ProductModel productModel = new ProductModel();
 
-            bookModel.setBookId(bookID);
-            bookModel.setBookName(bookName);
-            bookModel.setBookPrice(bookPrice);
+            productModel.setBookId(bookID);
+            productModel.setBookName(bookName);
+            productModel.setBookPrice(bookPrice);
 
-            data.add(bookModel);
+            data.add(productModel);
         }
 
         return data;
     }
 
-    private static List<BookModel> Tmallparse(Document doc)
+    private static List<ProductModel> Tmallparse(Document doc)
     {
-        List<BookModel> data = new ArrayList<>();
+        List<ProductModel> data = new ArrayList<>();
 
         Elements ulList = doc.select("div[class='view grid-nosku']");
         Elements liList = ulList.select("div[class='product']");
@@ -68,21 +71,21 @@ public class Parse
             // 商品价格
             String bookPrice = item.select("p[class='productPrice']").select("em").attr("title");
 
-            BookModel bookModel = new BookModel();
+            ProductModel productModel = new ProductModel();
 
-            bookModel.setBookId(bookID);
-            bookModel.setBookName(bookName);
-            bookModel.setBookPrice(bookPrice);
+            productModel.setBookId(bookID);
+            productModel.setBookName(bookName);
+            productModel.setBookPrice(bookPrice);
 
-            data.add(bookModel);
+            data.add(productModel);
         }
 
         return data;
     }
 
-    private static List<BookModel> Taobaoparse(Document doc)
+    private static List<ProductModel> Taobaoparse(Document doc)
     {
-        List<BookModel> data = new ArrayList<>();
+        List<ProductModel> data = new ArrayList<>();
 
         // 得到相关的js内容
         String jsonStr = "";
@@ -112,13 +115,13 @@ public class Parse
             // 商品价格
             String bookPrice = tagValue.getString("view_price");
 
-            BookModel bookModel = new BookModel();
+            ProductModel productModel = new ProductModel();
 
-            bookModel.setBookId(bookID);
-            bookModel.setBookName(bookName);
-            bookModel.setBookPrice(bookPrice);
+            productModel.setBookId(bookID);
+            productModel.setBookName(bookName);
+            productModel.setBookPrice(bookPrice);
 
-            data.add(bookModel);
+            data.add(productModel);
         }
 
         return data;

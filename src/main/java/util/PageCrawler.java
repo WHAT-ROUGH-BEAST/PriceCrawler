@@ -1,29 +1,25 @@
 package util;
 
 import main.CrawlerMain;
-import model.BookModel;
+import model.ProductModel;
 import model.Page;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.interactions.Mouse;
-import org.openqa.selenium.interactions.PointerInput;
 import parse.Parse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class PageCrawler
 {
-    private ChromeDriver driver;
-    private Page page;
-    private List<BookModel> data;
+    private final ChromeDriver driver;
+    private final Page page;
+    private final Set<ProductModel> data;
 
-    public PageCrawler(ChromeDriver driver, Page page, final List<BookModel> data)
+    public PageCrawler(ChromeDriver driver, Page page, final Set<ProductModel> data)
     {
         this.driver = driver;
         this.page = page;
@@ -46,12 +42,12 @@ public class PageCrawler
 
         try
         {
-            if (siteName.equals("tmall"))
-                maxPage = Integer.parseInt(driver.findElement(By.cssSelector("input[name='totalPage']")).getAttribute("value"));
-            else if (siteName.equals("taobao"))
-                maxPage = Integer.parseInt(driver.findElement(By.cssSelector("input[aria-label='页码输入框']")).getAttribute("max"));
-            else if (siteName.equals("jd"))
-                maxPage = Integer.parseInt(driver.findElement(By.cssSelector("span[class='p-skip']")).findElement(By.tagName("b")).getText());
+            switch (siteName)
+            {
+                case "tmall" -> maxPage = Integer.parseInt(driver.findElement(By.cssSelector("input[name='totalPage']")).getAttribute("value"));
+                case "taobao" -> maxPage = Integer.parseInt(driver.findElement(By.cssSelector("input[aria-label='页码输入框']")).getAttribute("max"));
+                case "jd" -> maxPage = Integer.parseInt(driver.findElement(By.cssSelector("span[class='p-skip']")).findElement(By.tagName("b")).getText());
+            }
         }
         catch (Exception e)
         {
@@ -68,117 +64,96 @@ public class PageCrawler
             data.addAll(scrollPage(page));
         else
         {
-            // 通过刷新的方式让源码中出现本页的json
-            driver.navigate().refresh();
-            URLFecter.sleep(1000);
+            // 通过刷新的方式让taobao源码中出现本页的json
+            if (page.getSiteName().equals("taobao"))
+            {
+                driver.navigate().refresh();
+                URLFecter.sleep(1);
+            }
 
             String entity = driver.getPageSource();
-            List<BookModel> pdata = Parse.getData(page.getSiteName(), entity);
+            List<ProductModel> pdata = Parse.getData(page.getSiteName(), entity);
             data.addAll(pdata);
         }
 
         // 翻页
         nextPage(page);
 
-        return page.getPage() <= page.getMaxPage();
+        return page.getPage() < page.getMaxPage();
     }
 
     private void nextPage(Page page)
     {
-        page.setPage(page.getPage() + 1);
+        // 在每一页停留随机时长(s)
+        // 一分钟以内
+//        int sleepTime = Math.abs(new Random(47).nextInt()) % 15;
+//        URLFecter.sleep(sleepTime * 1000);
 
+        // 到最后一页
         if (page.getPage() == page.getMaxPage())
             return;
 
+        page.setPage(page.getPage() + 1);
+
         String siteName = page.getSiteName();
-        if (siteName.equals("jd"))
+        switch (siteName)
         {
-            driver.findElement(By.className("fp-next")).click();
-            page.setUrl(driver.getCurrentUrl());
-        }
-        else if (siteName.equals("tmall"))
-        {
-            driver.findElement(By.cssSelector("a[class='ui-page-next']")).click();
-            page.setUrl(driver.getCurrentUrl());
+            case "jd" -> {
+                URLFecter.sleep(1);
+                driver.findElement(By.className("fp-next")).click();
+                page.setUrl(driver.getCurrentUrl());
+            }
+            case "tmall" -> {
+                driver.findElement(By.cssSelector("a[class='ui-page-next']")).click();
+                page.setUrl(driver.getCurrentUrl());
 
-            // 处理滑块
-            if (driver.getTitle().equals("验证码拦截"))
-                slide();
-        }
-        else if (siteName.equals("taobao"))
-        {
-            try
-            {
+                if (driver.getTitle().equals("验证码拦截"))
+                    slide();
+            }
+            case "taobao" -> {
                 driver.findElement(By.cssSelector("a[trace='srp_bottom_pagedown']")).click();
-            }
-            catch (Exception e)
-            {
-                CrawlerMain.logger.info("anti-crawler found");
-                page.setPage(page.getPage() - 1);
-            }
 
-            page.setUrl(driver.getCurrentUrl());
+                // 识别中途出现的滑块
+                int nextpage = Integer.parseInt(driver.findElement(By.cssSelector("input[class='input J_Input']")).getAttribute("value"));
+                if (nextpage != page.getPage() + 1)
+                    slide();
 
-            URLFecter.sleep(1000);
-
-            // 处理滑块 TODO
-            if (driver.getTitle().equals("验证码拦截"))
-            {
-                slide();
+                page.setUrl(driver.getCurrentUrl());
             }
         }
     }
 
-    // TODO
+    // 人工滑动滑块
     private void slide()
     {
-        String js = "var element = document.getElementById('nc_1_n1z');" +
-                "element.style = 'width: 300px;';" +
-                "var element = document.getElementById('nc_1__bg');" +
-                "element.style = 'width: 300px;';";
-        driver.executeScript(js);
+        // 1s加载页面
+        URLFecter.sleep(1);
+//        String js = "var element = document.getElementById('nc_1_n1z');" +
+//                "element.style = 'width: 300px;';" +
+//                "var element = document.getElementById('nc_1__bg');" +
+//                "element.style = 'width: 300px;';";
+//        driver.executeScript(js);
 
-        WebElement slider = driver.findElement(By.cssSelector("span[id='nc_1_n1z']"));
-        Actions move = new Actions(driver);
-        move.dragAndDropBy(slider, 1, 0).perform();
-
-        if (driver.getTitle().equals("验证码拦截"))
+        while (driver.getTitle().equals("验证码拦截"))
         {
-            driver.navigate().refresh();
-            URLFecter.sleep(1000);
-            slide();
+            CrawlerMain.logger.info("请滑动滑块");
+            URLFecter.sleep(10);
         }
     }
-//
-//    private List<Integer> randSlideSteps(int px, int step)
-//    {
-//        List<Integer> steps = new ArrayList<>();
-//        int add = 0;
-//        for (int i = 0; i < px / step; i ++)
-//        {
-//            int rand = Math.abs(new Random(47).nextInt()) % (step) + 1;
-//            add += rand;
-//            steps.add(rand);
-//        }
-//
-//        steps.add(px - add);
-//
-//        return steps;
-//    }
 
-    private List<BookModel> scrollPage(Page page)
+    private List<ProductModel> scrollPage(Page page)
     {
         // 滚动条到最下方加载所有商品
         String js1 = "window.scrollTo(0,document.body.scrollHeight)";
         ((JavascriptExecutor) driver).executeScript(js1);
 
         // 避免网页没有刷新完 以及避免最后一页不足60死循环
-        List<BookModel> pageData = new ArrayList<>();
+        List<ProductModel> pageData = new ArrayList<>();
         int loop = 0;
         while ((pageData.size() == 30 || pageData.size() == 0) && loop < 3)
         {
             // 等待网页刷新
-            URLFecter.sleep(500);
+            URLFecter.sleep(0.5);
             // 得到并处理网页源码
             String entity = driver.getPageSource();
             pageData = Parse.getData(page.getSiteName(), entity);

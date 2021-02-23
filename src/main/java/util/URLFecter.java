@@ -1,35 +1,28 @@
 package util;
 
-import com.google.common.collect.ImmutableMap;
 import main.CrawlerMain;
-import model.BookModel;
+import model.ProductModel;
 import model.Page;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import parse.Parse;
 
-import javax.swing.text.Element;
-import java.io.File;
-import java.io.PrintWriter;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 public class URLFecter
 {
-    private static ChromeDriver driver;
+    private final Page page;
+    private ChromeDriver driver;
 
-    static
+    public URLFecter(Page page)
     {
+        this.page = page;
         initChrome();
     }
 
-    private static void initChrome()
+    private void initChrome()
     {
         //setting the driver executable
         System.setProperty("webdriver.chrome.driver", ConfigUtils.getDriverAdd());
@@ -55,16 +48,16 @@ public class URLFecter
         });
     }
 
-    public static List<BookModel> URLParser(Page page) throws Exception
+    public Set<ProductModel> URLParser()
     {
-        List<BookModel> data = new ArrayList<>();
+        HashSet<ProductModel> data = new HashSet<>();
 
         //login
         if (page.getSiteName().equals("tmall") ||
                 page.getSiteName().equals("taobao"))
         {
-            login(page);
-            sleep(1500);
+            login();
+            sleep(5);
         }
 
         //逐页爬取
@@ -74,13 +67,15 @@ public class URLFecter
         //closing the browser
         driver.close();
 
+        log(data);
+
         return data;
     }
 
-    private static void login(Page page)
+    private void login()
     {
         driver.get(ConfigUtils.getLoginUrl());
-        sleep(1000);
+        sleep(1);
 
         WebElement usr = driver.findElement(By.id("fm-login-id"));
         WebElement pw = driver.findElement(By.id("fm-login-password"));
@@ -89,11 +84,23 @@ public class URLFecter
         pw.sendKeys(ConfigUtils.getPw() + Keys.ENTER);
     }
 
-    static void sleep(int milis)
+    private void log(Set<ProductModel> data)
+    {
+        CrawlerMain.logger.info("read from: " + page.getSiteName() + "\n" +
+                "search " + page.getSearchItem() + "\n" +
+                "count " + data.size() + "\n" +
+                "page " + page.getPage() + " of " + page.getMaxPage());
+
+        for (ProductModel da : data)
+            CrawlerMain.logger.info("bookID:"+da.getBookId()+"\t\t"+"bookPrice:"+ da.getBookPrice() +
+                    "\t\t"+"bookName:"+da.getBookName());
+    }
+
+    static void sleep(double s)
     {
         try
         {
-            Thread.sleep(milis);
+            Thread.sleep((int)s * 1000);
         }
         catch (Exception e)
         {
