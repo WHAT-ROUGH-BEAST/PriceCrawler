@@ -115,7 +115,7 @@ public class PageCrawler
 
                 // 识别中途出现的滑块
                 int nextpage = Integer.parseInt(driver.findElement(By.cssSelector("input[class='input J_Input']")).getAttribute("value"));
-                if (nextpage != page.getPage() + 1)
+                if (nextpage != page.getPage())
                     slide();
 
                 page.setUrl(driver.getCurrentUrl());
