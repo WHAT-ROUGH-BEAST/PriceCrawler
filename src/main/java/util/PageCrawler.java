@@ -93,8 +93,6 @@ public class PageCrawler
         if (page.getPage() == page.getMaxPage())
             return;
 
-        page.setPage(page.getPage() + 1);
-
         String siteName = page.getSiteName();
         switch (siteName)
         {
@@ -115,12 +113,17 @@ public class PageCrawler
                 driver.findElement(By.cssSelector("a[trace='srp_bottom_pagedown']")).click();
 
                 // 识别中途出现的滑块
-                if (nextpage + 1 != page.getPage())
+                if (nextpage != page.getPage() + 1)
                     slide();
 
                 page.setUrl(driver.getCurrentUrl());
+
+                // 避免因为过快导致未翻页就刷新
+                URLFecter.sleep(1);
             }
         }
+
+        page.setPage(page.getPage() + 1);
     }
 
     // 人工滑动滑块
