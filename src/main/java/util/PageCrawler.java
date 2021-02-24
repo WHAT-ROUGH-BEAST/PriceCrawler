@@ -5,9 +5,11 @@ import model.ProductModel;
 import model.Page;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import parse.Parse;
 
+import javax.swing.text.Element;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -76,10 +78,13 @@ public class PageCrawler
             data.addAll(pdata);
         }
 
-        // 翻页
-        nextPage(page);
-
-        return page.getPage() < page.getMaxPage();
+        if (page.getPage() < page.getMaxPage())
+        {
+            nextPage(page);
+            return true;
+        }
+        else
+            return false;
     }
 
     private void nextPage(Page page)
@@ -88,10 +93,7 @@ public class PageCrawler
         // 一分钟以内
 //        int sleepTime = Math.abs(new Random(47).nextInt()) % 15;
 //        URLFecter.sleep(sleepTime * 1000);
-
-        // 到最后一页
-        if (page.getPage() == page.getMaxPage())
-            return;
+        page.setPage(page.getPage() + 1);
 
         String siteName = page.getSiteName();
         switch (siteName)
@@ -109,21 +111,22 @@ public class PageCrawler
                     slide();
             }
             case "taobao" -> {
-                int nextpage = Integer.parseInt(driver.findElement(By.cssSelector("input[class='input J_Input']")).getAttribute("value"));
+                // TODO 有时多翻了一页
                 driver.findElement(By.cssSelector("a[trace='srp_bottom_pagedown']")).click();
-
-                // 识别中途出现的滑块
-                if (nextpage != page.getPage() + 1)
-                    slide();
-
-                page.setUrl(driver.getCurrentUrl());
-
                 // 避免因为过快导致未翻页就刷新
                 URLFecter.sleep(1);
+                // 识别中途出现的滑块
+                WebElement thisPage = driver.findElement(By.cssSelector("li[class='item active']"));
+                int thisPageNum = Integer.parseInt(thisPage.findElement(By.className("num")).getText());
+                if (thisPageNum != page.getPage())
+                {
+                    // slide
+                    CrawlerMain.logger.info("anti-craw");
+                }
+
+                page.setUrl(driver.getCurrentUrl());
             }
         }
-
-        page.setPage(page.getPage() + 1);
     }
 
     // 人工滑动滑块
@@ -140,8 +143,11 @@ public class PageCrawler
         while (driver.getTitle().equals("验证码拦截"))
         {
             CrawlerMain.logger.info("请滑动滑块");
-            URLFecter.sleep(10);
+            URLFecter.sleep(5);
         }
+
+        // 防止页面还没加载好就读数据
+        URLFecter.sleep(5);
     }
 
     private List<ProductModel> scrollPage(Page page)
@@ -156,7 +162,7 @@ public class PageCrawler
         while ((pageData.size() == 30 || pageData.size() == 0) && loop < 3)
         {
             // 等待网页刷新
-            URLFecter.sleep(0.5);
+            URLFecter.sleep(1);
             // 得到并处理网页源码
             String entity = driver.getPageSource();
             pageData = Parse.getData(page.getSiteName(), entity);

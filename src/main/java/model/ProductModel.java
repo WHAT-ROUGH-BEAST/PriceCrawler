@@ -6,38 +6,49 @@ import java.util.Objects;
 
 public class ProductModel implements Comparable<ProductModel>
 {
-    private String bookName;
-    private String bookId;
-    private String bookPrice;
+    private String site;
+    private String productName;
+    private String productId;
+    private String productPrice;
 
-    public String getBookName()
+    public String getSite()
     {
-        return bookName;
+        return site;
     }
 
-    public String getBookId()
+    public void setSite(String site)
     {
-        return bookId;
+        this.site = site;
     }
 
-    public String getBookPrice()
+    public String getProductName()
     {
-        return bookPrice;
+        return productName;
     }
 
-    public void setBookName(String bookName)
+    public String getProductId()
     {
-        this.bookName = bookName;
+        return productId;
     }
 
-    public void setBookId(String bookId)
+    public String getProductPrice()
     {
-        this.bookId = bookId;
+        return productPrice;
     }
 
-    public void setBookPrice(String bookPrice)
+    public void setProductName(String productName)
     {
-        this.bookPrice = bookPrice;
+        this.productName = productName;
+    }
+
+    public void setProductId(String productId)
+    {
+        this.productId = productId;
+    }
+
+    public void setProductPrice(String productPrice)
+    {
+        this.productPrice = productPrice;
     }
 
     @Override
@@ -48,20 +59,20 @@ public class ProductModel implements Comparable<ProductModel>
         if (o == null || getClass() != o.getClass())
             return false;
         ProductModel that = (ProductModel) o;
-        return bookId.equals(that.bookId);
+        return productId.equals(that.productId);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(bookId);
+        return Objects.hash(productId);
     }
 
     @Override
     public int compareTo(@NotNull ProductModel o)
     {
-        double thisPrice = Double.parseDouble(this.bookPrice),
-                oPrice = Double.parseDouble(o.bookPrice);
+        double thisPrice = Double.parseDouble(this.productPrice),
+                oPrice = Double.parseDouble(o.productPrice);
 
         if (thisPrice > oPrice)
             return 1;

@@ -37,17 +37,19 @@ public class Parse
         Elements elements = doc.select("ul[class=gl-warp clearfix]").select("li[class=gl-item]");
         for (Element elem : elements)
         {
-            String bookID = elem.attr("data-sku");
-            String bookPrice = elem.select("div[class=p-price]").select("strong").select("i").text();
-            String bookName = elem.select("div[class=p-name]").select("em").text();
-            if (bookName.isEmpty())
-                bookName = elem.select("div[class=p-name p-name-type-2]").select("em").text();
+            String site = "jd";
+            String productID = elem.attr("data-sku");
+            String productPrice = elem.select("div[class=p-price]").select("strong").select("i").text();
+            String productName = elem.select("div[class=p-name]").select("em").text();
+            if (productName.isEmpty())
+                productName = elem.select("div[class=p-name p-name-type-2]").select("em").text();
 
             ProductModel productModel = new ProductModel();
 
-            productModel.setBookId(bookID);
-            productModel.setBookName(bookName);
-            productModel.setBookPrice(bookPrice);
+            productModel.setProductId(productID);
+            productModel.setProductName(productName);
+            productModel.setProductPrice(productPrice);
+            productModel.setSite(site);
 
             data.add(productModel);
         }
@@ -64,18 +66,20 @@ public class Parse
         // 循环liList的数据（具体获取的数据值还得看doc的页面源代码来获取，可能稍有变动）
         for (Element item : liList)
         {
+            String site = "tmall";
             // 商品ID
-            String bookID = item.select("div[class='product']").select("p[class='productStatus']").select("span[class='ww-light ww-small m_wangwang J_WangWang']").attr("data-item");
+            String productID = item.select("div[class='product']").select("p[class='productStatus']").select("span[class='ww-light ww-small m_wangwang J_WangWang']").attr("data-item");
             // 商品名称
-            String bookName = item.select("p[class='productTitle']").select("a").attr("title");
+            String productName = item.select("p[class='productTitle']").select("a").attr("title");
             // 商品价格
-            String bookPrice = item.select("p[class='productPrice']").select("em").attr("title");
+            String productPrice = item.select("p[class='productPrice']").select("em").attr("title");
 
             ProductModel productModel = new ProductModel();
 
-            productModel.setBookId(bookID);
-            productModel.setBookName(bookName);
-            productModel.setBookPrice(bookPrice);
+            productModel.setProductId(productID);
+            productModel.setProductName(productName);
+            productModel.setProductPrice(productPrice);
+            productModel.setSite(site);
 
             data.add(productModel);
         }
@@ -105,21 +109,24 @@ public class Parse
                 getJSONObject("data").
                 getJSONArray("auctions");
 
-        for(int i = 0;i < jsonArr.length(); i ++)
+        for(int i = 0; i < jsonArr.length(); i ++)
         {
             JSONObject tagValue = jsonArr.getJSONObject(i);
+
+            String site = "taobao";
             // 商品ID
-            String bookID = tagValue.getString("nid");
+            String productID = tagValue.getString("nid");
             // 商品名称
-            String bookName = tagValue.getString("raw_title");
+            String productName = tagValue.getString("raw_title");
             // 商品价格
-            String bookPrice = tagValue.getString("view_price");
+            String productPrice = tagValue.getString("view_price");
 
             ProductModel productModel = new ProductModel();
 
-            productModel.setBookId(bookID);
-            productModel.setBookName(bookName);
-            productModel.setBookPrice(bookPrice);
+            productModel.setProductId(productID);
+            productModel.setProductName(productName);
+            productModel.setProductPrice(productPrice);
+            productModel.setSite(site);
 
             data.add(productModel);
         }

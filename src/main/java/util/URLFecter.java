@@ -8,7 +8,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 public class URLFecter
@@ -92,8 +91,8 @@ public class URLFecter
                 "page " + page.getPage() + " of " + page.getMaxPage());
 
         for (ProductModel da : data)
-            CrawlerMain.logger.info("bookID:"+da.getBookId()+"\t\t"+"bookPrice:"+ da.getBookPrice() +
-                    "\t\t"+"bookName:"+da.getBookName());
+            CrawlerMain.logger.info("bookID:"+da.getProductId()+"\t\t"+"bookPrice:"+ da.getProductPrice() +
+                    "\t\t"+"bookName:"+da.getProductName());
     }
 
     static void sleep(double s)
