@@ -12,7 +12,7 @@ public class CrawlerMain
     public static Logger logger = Logger.getLogger(CrawlerMain.class);
     public static List<String> sites = new ArrayList<>(Arrays.asList(
             "taobao", "jd", "tmall"));
-    public static String searchItem = "louie";
+    public static String searchItem = "三体";
 
     public static void main(String[] args)
     {

@@ -111,11 +111,14 @@ public class PageCrawler
                     slide();
             }
             case "taobao" -> {
-                // TODO 有时多翻了一页
                 driver.findElement(By.cssSelector("a[trace='srp_bottom_pagedown']")).click();
                 // 避免因为过快导致未翻页就刷新
                 URLFecter.sleep(1);
-                // 识别中途出现的滑块
+
+                // 滑块页
+                if (driver.getTitle().equals("验证码拦截"))
+                    slide();
+                // 页面嵌入滑块
                 WebElement thisPage = driver.findElement(By.cssSelector("li[class='item active']"));
                 int thisPageNum = Integer.parseInt(thisPage.findElement(By.className("num")).getText());
                 if (thisPageNum != page.getPage())
