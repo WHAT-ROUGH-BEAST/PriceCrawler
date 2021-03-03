@@ -61,6 +61,8 @@ public class URLFecter
 
         //逐页爬取
         PageCrawler crawler = new PageCrawler(driver, page, data);
+        //等待滑块出现
+        sleep(2);
         while (crawler.Craw()){}
 
         //closing the browser

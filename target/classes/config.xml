@@ -24,4 +24,11 @@
     <user>1806991194@qq.com</user>
     <pw>transformers!13</pw>
 
+    <database>
+        <driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</driver>
+        <url>jdbc:sqlserver://localhost:1433; DataBaseName=PriceCrawler</url>
+        <user>sa</user>
+        <pw>transformers!13</pw>
+    </database>
+
 </configuration>

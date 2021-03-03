@@ -1,5 +1,6 @@
 package main;
 
+import db.ProductDB;
 import model.ProductModel;
 import model.Page;
 import org.apache.log4j.Logger;
@@ -12,25 +13,21 @@ public class CrawlerMain
     public static Logger logger = Logger.getLogger(CrawlerMain.class);
     public static List<String> sites = new ArrayList<>(Arrays.asList(
             "taobao", "jd", "tmall"));
-    public static String searchItem = "三体";
+    public static String searchItem = "louie";
 
     public static void main(String[] args)
     {
-        HashMap<String, ProductModel> mins = new HashMap<>();
         try
         {
-//            for (String site : sites)
-//            {
-//                Set<ProductModel> data = new URLFecter(new Page(site, searchItem)).URLParser();
-//                mins.put(site, Collections.min(data));
-//            }
+            Set<ProductModel> data = new HashSet<>();
+            for (String site : sites)
+                data.addAll(new URLFecter(new Page(site, searchItem)).URLParser());
+            // db
+            writeDB(data, searchItem);
 
-            // test taobao
-            Set<ProductModel> data = new URLFecter(new Page("taobao", searchItem)).URLParser();
-            mins.put("jd", Collections.min(data));
-
-            mins.forEach((s, v)->{
-                logger.info(s + " : " + v.getProductPrice() + " " + v.getProductName());
+            sites.forEach((site)->{
+                ProductModel p = getCheapest(searchItem, site);
+                logger.info(site + " : ¥" + p.getProductPrice() + " " + p.getProductName());
             });
         }
         catch (Exception e)
@@ -39,5 +36,27 @@ public class CrawlerMain
         }
 
         System.exit(1);
+    }
+
+    public static void writeDB(Set<ProductModel> data, String searchItem)
+    {
+        logger.info("writing in database : " + searchItem);
+        ProductDB db = ProductDB.getInstance();
+
+        db.writeProducts(data, searchItem);
+
+        db.killInstance();
+        logger.info("done written");
+    }
+
+    public static ProductModel getCheapest(String searchItem, String site)
+    {
+        ProductDB db = ProductDB.getInstance();
+
+        ProductModel product = db.getCheapest(searchItem, site);
+
+        db.killInstance();
+
+        return product;
     }
 }

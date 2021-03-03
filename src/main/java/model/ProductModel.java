@@ -11,6 +11,16 @@ public class ProductModel implements Comparable<ProductModel>
     private String productId;
     private String productPrice;
 
+    public ProductModel() {}
+
+    public ProductModel(String site, String productName, String productId, String productPrice)
+    {
+        this.site = site;
+        this.productName = productName;
+        this.productId = productId;
+        this.productPrice = productPrice;
+    }
+
     public String getSite()
     {
         return site;
@@ -60,6 +70,12 @@ public class ProductModel implements Comparable<ProductModel>
             return false;
         ProductModel that = (ProductModel) o;
         return productId.equals(that.productId);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Product: " + site + " " + productId + " " + productName + " ¥" + productPrice;
     }
 
     @Override
